@@ -103,10 +103,26 @@ resource "aws_ssm_parameter" "km_ssm_db_name" {
 
 resource "aws_s3_bucket" "km_blob_storage" {
   bucket = "km-blob-storage-${var.environment}"
-  acl    = "private"
+  # acl    = "private"
   tags = merge(var.default_tags, {
     name = "km_blob_storage_${var.environment}"
   })
+}
+
+resource "aws_s3_bucket_ownership_controls" "km_blob_storage" {
+  depends_on = [aws_s3_bucket.km_blob_storage]
+  
+  bucket = aws_s3_bucket.km_blob_storage.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "km_blob_storage" {
+  depends_on = [aws_s3_bucket_ownership_controls.km_blob_storage]
+
+  bucket = "km-blob-storage${var.environment}"
+  acl    = "private"
 }
 
 resource "aws_s3_bucket" "km_public_blob" {
