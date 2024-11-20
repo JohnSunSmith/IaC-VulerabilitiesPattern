@@ -46,7 +46,7 @@ resource "aws_db_instance" "km_db" {
   name                      = "km_db_${var.environment}"
   allocated_storage         = 20
   engine                    = "postgres"
-  engine_version            = "10.6"
+  engine_version            = "11.22"
   instance_class            = "db.t3.medium"
   storage_type              = "gp2"
   password                  = var.db_password
@@ -121,7 +121,7 @@ resource "aws_s3_bucket_ownership_controls" "km_blob_storage" {
 resource "aws_s3_bucket_acl" "km_blob_storage" {
   depends_on = [aws_s3_bucket_ownership_controls.km_blob_storage]
 
-  bucket = "km-blob-storage${var.environment}"
+  bucket = aws_s3_bucket.km_blob_storage.id
   acl    = "private"
 }
 
